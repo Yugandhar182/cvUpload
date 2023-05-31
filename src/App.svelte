@@ -15,6 +15,8 @@
   let newCandidate = { firstName: "", surname: "", email: "", mobile: "" };
   let showCVUploadPopup = false;
   let cvFile = null;
+  let fileContent = '';
+  let fileName = '';
 
   const dispatch = createEventDispatcher();
 
@@ -138,39 +140,51 @@
   }
 
   async function saveCV() {
-  // Implement the logic to save the CV file here
-  // The selected CV file can be accessed using the cvFile variable
-  console.log("CV file:", cvFile);
+    // Update the selectedCandidate with the CV file information
+    selectedCandidate.cvFile = {
+      name: fileName,
+      content: fileContent
+    };
 
-  // Update the API URL with the CV file information
-  const apiUrl = `https://api.recruitly.io/api/candidate?apiKey=TEST1236C4CF23E6921C41429A6E1D546AC9535E&cvFile=${cvFile.name}`;
+    // Send the updated candidate data to the API
+    const apiUrl = `https://api.recruitly.io/api/candidate?apiKey=TEST1236C4CF23E6921C41429A6E1D546AC9535E`;
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(selectedCandidate)
+    });
 
-  // Send the updated API URL to the server
-  const response = await fetch(apiUrl, {
-    method: 'PUT', // Assuming you want to update the candidate's CV file
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(selectedCandidate) // Assuming you have the selectedCandidate object containing the candidate's data
-  });
+    if (response.ok) {
+      successMessage = "CV file saved successfully.";
+      showSuccessMessage = true;
 
-  if (response.ok) {
-    successMessage = "CV file saved successfully.";
-    showSuccessMessage = true;
+      // Fetch the updated candidate list
+      await fetchData();
+    } else {
+      // Handle the case where the update request fails
+      console.error("Failed to save CV file.");
+    }
 
-    // Fetch the updated candidate list
-    await fetchData();
-  } else {
-    // Handle the case where the update request fails
-    console.error("Failed to save CV file.");
+    closePopup();
   }
-
-  closePopup();
-}
-
 
   function handleCVFileChange(event) {
     cvFile = event.target.files[0];
+    toBase64(cvFile).then(result => {
+      fileContent = result;
+      fileName = cvFile.name;
+    });
+  }
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = error => reject(error);
+    });
   }
 </script>
 

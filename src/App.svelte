@@ -13,7 +13,8 @@
   let candidateToDelete = null;
   let showAddCandidatePopup = false;
   let newCandidate = { firstName: "", surname: "", email: "", mobile: "" };
-  let showCVUploadPopup = false; // Added property for the CV Upload popup
+  let showCVUploadPopup = false;
+  let cvFile = null;
 
   const dispatch = createEventDispatcher();
 
@@ -71,7 +72,7 @@
     newCandidate = { firstName: "", surname: "", email: "", mobile: "" };
 
     showAddCandidatePopup = false;
-    showCVUploadPopup = false; // Close the CV Upload popup
+    showCVUploadPopup = false;
   }
 
   function showDeleteWarning(candidate) {
@@ -134,6 +135,42 @@
     }
 
     closePopup();
+  }
+
+  async function saveCV() {
+  // Implement the logic to save the CV file here
+  // The selected CV file can be accessed using the cvFile variable
+  console.log("CV file:", cvFile);
+
+  // Update the API URL with the CV file information
+  const apiUrl = `https://api.recruitly.io/api/candidate?apiKey=TEST1236C4CF23E6921C41429A6E1D546AC9535E&cvFile=${cvFile.name}`;
+
+  // Send the updated API URL to the server
+  const response = await fetch(apiUrl, {
+    method: 'PUT', // Assuming you want to update the candidate's CV file
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(selectedCandidate) // Assuming you have the selectedCandidate object containing the candidate's data
+  });
+
+  if (response.ok) {
+    successMessage = "CV file saved successfully.";
+    showSuccessMessage = true;
+
+    // Fetch the updated candidate list
+    await fetchData();
+  } else {
+    // Handle the case where the update request fails
+    console.error("Failed to save CV file.");
+  }
+
+  closePopup();
+}
+
+
+  function handleCVFileChange(event) {
+    cvFile = event.target.files[0];
   }
 </script>
 
@@ -281,11 +318,10 @@
     <div class="popup-content">
       <h1>CV Upload</h1>
       <p>Choose File:</p>
-      <input type="file" accept=".pdf, .doc, .docx">
+      <input type="file" accept=".pdf, .doc, .docx" on:change={handleCVFileChange}>
 
       <button class="btn btn-primary" on:click|preventDefault={saveCV}>Save</button>
       <button class="btn btn-secondary" on:click|preventDefault={closePopup}>Cancel</button>
     </div>
   </div>
 {/if}
-

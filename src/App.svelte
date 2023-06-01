@@ -13,6 +13,7 @@
 	let isDeletePopupVisible = false;
 	let editJob = null;
 	let isEditPopupVisible = false;
+	let isUploadSuccess = false; // New state variable for success message
   
 	const dispatch = createEventDispatcher();
   
@@ -53,19 +54,46 @@
 		  // Handle the response accordingly
 		  if (response.ok) {
 			console.log("CV uploaded successfully!");
+			isUploadSuccess = true; // Set the flag to true
 		  } else {
 			console.error("CV upload failed.");
 		  }
 		})
 		.catch(error => {
 		  console.error("CV upload error:", error);
+		})
+		.finally(() => {
+		  // Perform close logic
+		  isPopupVisible = false;
 		});
 	}
   
 	function handleSave() {
 	  // Perform save logic
-	  // In this case, we're updating the backend API URL in the handleFileUpload function
-	  isPopupVisible = false;
+	  // In this case, we're updating the backend API URL with the file upload
+	  const formData = new FormData();
+	  formData.append("file", file);
+  
+	  fetch(`https://api.recruitly.io/api/candidatecv/upload?apiKey=TEST1236C4CF23E6921C41429A6E1D546AC9535E&candidateId=${uploadJobId}`, {
+		method: "POST",
+		body: formData
+	  })
+		.then(response => {
+		  // Handle the response accordingly
+		  if (response.ok) {
+			console.log("CV uploaded successfully!");
+			isUploadSuccess = true; // Set the flag to true
+		  } else {
+			console.error("CV upload failed.");
+		  }
+		})
+		.catch(error => {
+		  console.error("CV upload error:", error);
+		})
+		.finally(() => {
+		  // Perform close logic
+		  isPopupVisible = false;
+		});
 	}
   
 	function handleClose() {
@@ -99,7 +127,7 @@
 		  isDeletePopupVisible = false;
 		});
 	}
-
+  
 	function handleEdit(job) {
 	  editJob = { ...job };
 	  isEditPopupVisible = true;
@@ -166,40 +194,39 @@
 	  </table>
 	  {#if isPopupVisible && uploadJobId !== null}
 		<div class="popup">
-		  <h4>Upload CV </h4>
+		  <h4>Upload CV</h4>
 		  <input type="file" on:change={handleFileUpload} />
 		  <button on:click={handleSave} class="btn btn-primary">Save</button>
 		  <button on:click={handleClose} class="btn btn-secondary">Close</button>
 		</div>
 	  {/if}
+	  {#if isUploadSuccess}
+		<div class="popup success">
+		  <h4>CV Uploaded Successfully!</h4>
+		  <button on:click={() => isUploadSuccess = false} class="btn btn-primary">OK</button>
+		</div>
+	  {/if}
 	  {#if isDeletePopupVisible && deleteJobId !== null}
 		<div class="popup">
-		  <h4>Are you sure you want to delete ?</h4>
-		  <button on:click={handleDeleteConfirm} class="btn btn-danger">Confirm Delete</button>
+		  <h4>Confirm Delete</h4>
+		  <p>Are you sure you want to delete this job?</p>
+		  <button on:click={handleDeleteConfirm} class="btn btn-danger">Delete</button>
 		  <button on:click={() => isDeletePopupVisible = false} class="btn btn-secondary">Cancel</button>
 		</div>
 	  {/if}
 	  {#if isEditPopupVisible && editJob !== null}
 		<div class="popup">
-		  <h4>Edit candidate</h4>
-		  <div>
-			<label for="editFirstName">First Name:</label>
-			<input type="text" id="editFirstName" bind:value={editJob.firstName} />
-		  </div>
-		  <div>
-			<label for="editSurname">Surname:</label>
-			<input type="text" id="editSurname" bind:value={editJob.surname} />
-		  </div>
-		  <div>
-			<label for="editEmail">Email:</label>
-			<input type="email" id="editEmail" bind:value={editJob.email} />
-		  </div>
-		  <div>
-			<label for="editMobile">Mobile:</label>
-			<input type="text" id="editMobile" bind:value={editJob.mobile} />
-		  </div>
+		  <h4>Edit Job</h4>
+		  <label for="firstName">First Name:</label>
+		  <input type="text" id="firstName" bind:value={editJob.firstName} class="form-control" />
+		  <label for="surname">Surname:</label>
+		  <input type="text" id="surname" bind:value={editJob.surname} class="form-control" />
+		  <label for="email">Email:</label>
+		  <input type="email" id="email" bind:value={editJob.email} class="form-control" />
+		  <label for="mobile">Mobile:</label>
+		  <input type="text" id="mobile" bind:value={editJob.mobile} class="form-control" />
 		  <button on:click={handleEditSave} class="btn btn-primary">Save</button>
-		  <button on:click={() => isEditPopupVisible = false} class="btn btn-secondary">Close</button>
+		  <button on:click={() => isEditPopupVisible = false} class="btn btn-secondary">Cancel</button>
 		</div>
 	  {/if}
 	{/if}
@@ -213,7 +240,12 @@
 	  transform: translate(-50%, -50%);
 	  background-color: white;
 	  padding: 20px;
-	  border: 1px solid black;
-	  z-index: 9999;
+	  border-radius: 8px;
+	  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	}
+  
+	.success {
+	  background-color: lightgreen;
 	}
   </style>
+  

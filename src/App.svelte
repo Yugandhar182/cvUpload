@@ -6,6 +6,7 @@
 	import SuccessPopup from "./SuccessPopup.svelte";
 	import DeletePopup from "./DeletePopup.svelte";
 	import EditPopup from "./EditPopup.svelte";
+	import 'bootstrap/dist/css/bootstrap.min.css';
   
 	let jsonData = [];
 	let tableVisible = false;

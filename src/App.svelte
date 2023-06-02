@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { createEventDispatcher } from "svelte";
 	import Table from "./Table.svelte";
-	import Popup from "./Popup.svelte";
+	import Popup from "./CVPopup.svelte";
 	import SuccessPopup from "./SuccessPopup.svelte";
 	import DeletePopup from "./DeletePopup.svelte";
 	import EditPopup from "./EditPopup.svelte";

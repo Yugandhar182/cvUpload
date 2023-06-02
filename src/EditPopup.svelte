@@ -30,7 +30,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
   
   
   <div class="popup">
-    <h4>Edit Job</h4>
+    <h4>Edit Candiadate Details</h4>
     <label for="firstName">First Name:</label>
     <input type="text" id="firstName" bind:value={editJob.firstName} class="form-control" />
     <label for="surname">Surname:</label>

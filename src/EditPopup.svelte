@@ -1,12 +1,12 @@
 <script>
+
+import 'bootstrap/dist/css/bootstrap.min.css';
     export let handleEditSave;
     export let handleClose;
     export let editJob;
   </script>
   
   <style>
-    @import 'bootstrap/dist/css/bootstrap.min.css';
-  
     .popup {
       position: fixed;
       top: 50%;
@@ -16,8 +16,18 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      width: 30%;
+    }
+    
+    .popup label {
+      margin-bottom: 10px;
+    }
+    
+    .popup input {
+      margin-bottom: 15px;
     }
   </style>
+  
   
   <div class="popup">
     <h4>Edit Job</h4>
